@@ -377,6 +377,182 @@
     font-weight: 500;
   }
 
+  /* ── Delete button ── */
+  .card-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .card:hover .card-delete { opacity: 1; }
+  .card-delete:hover { color: var(--red); background: var(--red-glow); }
+
+  /* ── Confirm modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 380px;
+    width: 90%;
+  }
+
+  .modal h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .modal p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .modal-btn-cancel {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .modal-btn-cancel:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  .modal-btn-confirm {
+    background: var(--red-glow);
+    color: var(--red);
+    border-color: rgba(255,107,107,0.25);
+  }
+
+  .modal-btn-confirm:hover {
+    background: rgba(255,107,107,0.15);
+    border-color: var(--red);
+  }
+
+  /* ── Sync indicator ── */
+  .sync-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    border-radius: 100px;
+    z-index: 999;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  .sync-status.saving {
+    background: var(--amber-glow);
+    color: var(--amber);
+    border: 1px solid rgba(240,185,82,0.2);
+    opacity: 1;
+  }
+
+  .sync-status.saved {
+    background: var(--emerald-glow);
+    color: var(--emerald);
+    border: 1px solid rgba(74,222,128,0.2);
+    opacity: 1;
+  }
+
+  .sync-status.error {
+    background: var(--red-glow);
+    color: var(--red);
+    border: 1px solid rgba(255,107,107,0.2);
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .sync-status.hidden { opacity: 0; }
+
+  /* ── PAT setup ── */
+  .pat-input {
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 10px 12px;
+    margin-bottom: 16px;
+  }
+
+  .pat-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .settings-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+
+  .settings-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-secondary);
+  }
+
   /* ── Responsive ── */
   @media (max-width: 900px) {
     .board {
@@ -400,6 +576,7 @@
   <div class="header-meta">
     <div id="lastUpdated"></div>
     <div id="taskStats"></div>
+    <button class="settings-btn" onclick="showPatModal()">SETUP</button>
   </div>
 </header>
 
@@ -420,55 +597,127 @@
   <div class="stat" id="footerStats"></div>
 </div>
 
+<div class="sync-status hidden" id="syncStatus"></div>
+<div id="modalContainer"></div>
+
 <script>
-const TASKS = [
-  {id:"task_001",title:"Create Melb officewarming poster",priority:1,assignee:"hugh",status:"in_progress",due:"Mon Mar 17",notes:"Event Mar 27, poster needed by Mon Mar 17 for promotion + Luma link.\nTools: CC + Remotion + Figma.",quotes:["Hugh: 'making posters today, ideally done eow'","Gia: 'posted by next monday, luma link going out then too'","Hugh: 'next monday ez'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773281266000000",channel:"#lyra-growth"},
-  {id:"task_002",title:"Update tagline on YouTube and Google",priority:1,assignee:"hugh",status:"todo",notes:"\"Shipping products...\" \u2192 \"Founding engineers for 75+ SV startups\". TT+IG done. YT+Google pending.",quotes:["Nam: 'pls update insta, tiktok, youtube, google'","Hugh: 'updated tt and ig'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773126895082189",channel:"#lyra-growth"},
-  {id:"task_008",title:"Review Hari L&L for sensitive info",priority:1,assignee:"annsley",status:"todo",notes:"Blocker for L&L publishing pipeline. Must review via transcript or other means.",quotes:["Gia: 'Hari's has internal lyra information, should cut it all out'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",channel:"#lyra-growth"},
-  {id:"task_012",title:"Implement content consent system",priority:1,assignee:"hugh",status:"todo",notes:"Rebecca upset about unauthorized tag \u2014 her manager saw it. Need: employee form backfill + Luma consent field.",quotes:["Manan: 'need to check content with eng before posting'","Anh: 'can we do a backfill on employee form'"],link:"https://lyra-technologies.slack.com/archives/C08A4BDALPN/p1772836570294649",channel:"#l-ops-gia"},
-  {id:"task_011",title:"Annsley daily updates \u2014 consistent",priority:1,assignee:"annsley",status:"in_progress",notes:"Bot flagged missing daily update for Mar 12. Annsley caught up Mar 13.",quotes:["Bot: 'no daily update found, please send. cc @Hugh'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773350000000000",channel:"#l-growth-annsley"},
-  {id:"task_016",title:"Systemise Sydney content calendar",priority:1,assignee:"hugh",status:"in_progress",notes:"11 days overdue, 10 bot bumps. Critical for growth team operations.",quotes:["Hugh: 'doing now chill out cuz' (Mar 9)"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772716200000000",channel:"#lyra-growth"},
-  {id:"task_003",title:"Buy Adobe Premiere Pro",priority:2,assignee:"hugh",status:"todo",notes:"Premiere Pro cancelled \u2014 repurchase via Wise digital card.",quotes:["Lisa: 'login to your wise acc \u2014 order a digital card from growth group'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773220171477089",channel:"#lyra-growth"},
-  {id:"task_005",title:"Build content calendar (Slack/TG/GCal)",priority:2,assignee:"hugh",status:"in_progress",notes:"Building slack ingest with Claude MCP. Syncs Telegram, Slack, and GCal.",quotes:["Hugh: 'building a content calendar that syncs with telegram, slack and gcal'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773024927422429",channel:"#lyra-growth"},
-  {id:"task_006",title:"Nam reel \u2014 alt version",priority:2,assignee:"duke",status:"todo",notes:"Original reel posted. Alt version with 'dropping uni to coding' narrative.",quotes:["Nam: 'keep this version, do another with dropping uni to coding'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773227963108539",channel:"#lyra-growth"},
-  {id:"task_007",title:"Onboard Annsley into video editing",priority:2,assignee:"duke",status:"in_progress",notes:"Duke onboarding Annsley into editing L&L videos. Training happened Mar 9.",quotes:["Annsley: '2hrs editing w dukey'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",channel:"#lyra-growth"},
-  {id:"task_009",title:"Isaac LinkedIn \u2014 80/20 strategy",priority:2,assignee:"annsley",status:"in_progress",notes:"80% credible founder-level, 20% top-of-funnel. 2x/week Tue+Fri.",quotes:["Anh: 'top-of-funnel must not derail to cater to unqualified mass'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773150000000000",channel:"#l-growth-annsley"},
-  {id:"task_014",title:"Annsley LPBs \u2014 Manan, Isaac, Makeen",priority:2,assignee:"annsley",status:"in_progress",notes:"Core growth deliverable \u2014 LinkedIn Profile Branding posts.",quotes:["Annsley: 'manan lpb, isaac lpb, makeen lpb (posting tmr)'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773100000000000",channel:"#l-growth-annsley"},
-  {id:"task_013",title:"Submit timesheet",priority:2,assignee:"hugh",status:"todo",notes:"Lisa reminded Hugh on Mar 6. May already be done.",quotes:["Lisa: '@Hugh time sheet!'"],link:"https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1772900000000000",channel:"#l-growth-hugh"},
-  {id:"task_017",title:"Restart Software Sauce / L&L on YouTube",priority:2,assignee:"hugh",status:"todo",notes:"Low effort, high ROI. Minimal editing. Need camera setup Fri 9-12.",quotes:["Gia: 'great for increasing client rep'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143560000000",channel:"#lyra-growth"},
-  {id:"task_018",title:"Buy office hard drive ($700)",priority:2,assignee:"hugh",status:"todo",notes:"8TB HDD + 1TB SSD + docking station. Replacing Winston's equipment.",quotes:["Hugh: '700 bucks then we're good for the rest of the year'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772600000000000",channel:"#lyra-growth"},
-  {id:"task_019",title:"Record engineer LinkedIn post process",priority:2,assignee:"hugh",status:"todo",notes:"Anh: 1) Intro from Anh's account 2) Engineer writes own post 2-4 weeks later.",quotes:["Anh: 'can we have that recorded in process please'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771310640000000",channel:"#lyra-growth"},
-  {id:"task_020",title:"IG recap tagging \u2014 shareability",priority:2,assignee:"hugh",status:"todo",notes:"Professional pics first, shareable at back. Tag engineers for reposts.",quotes:["Anh: 'not hitting the mark unless 15 shares'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772024400000000",channel:"#lyra-growth"},
-  {id:"task_021",title:"MyLyraLife \u2014 polished content",priority:2,assignee:"hugh",status:"in_progress",notes:"Hugh POC for thelyralife IG. Follow Canva playbook. DIML pipeline.",quotes:["Nam: 'Make it polished, follow Canva playbook. No degen stuff'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771282200000000",channel:"#lyra-growth"},
-  {id:"task_022",title:"Engfest poster",priority:2,assignee:"duke",status:"in_progress",notes:"Long-running. Gia checked in Mar 9. Final status unclear.",quotes:["Gia: 'how is the engfest poster going??'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771006680000000",channel:"#lyra-growth"},
-  {id:"task_023",title:"Share ZTO photos with Karan",priority:2,assignee:"hugh",status:"todo",notes:"External partner request from Zero To One via Eoin.",quotes:["Eoin: 'Karan wants photos/clips for marketing'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772078460000000",channel:"#lyra-growth"},
-  {id:"task_025",title:"Lyra recap \u2014 weekly Fri 5pm",priority:2,assignee:"annsley",status:"in_progress",notes:"Recurring. Hugh reviews before posting. Tag engineers.",quotes:["Hugh: 'recap by 2pm saturday latest, friday 5pm if nothing friday night'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771800000000000",channel:"#lyra-growth"},
-  {id:"task_010",title:"Annsley n8n leadership updates",priority:3,assignee:"annsley",status:"in_progress",notes:"Building n8n workflow for auto leadership updates. 90% done.",quotes:["Annsley: '90% there w n8n'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773200000000000",channel:"#l-growth-annsley"},
-  {id:"task_004",title:"Investigate online photo search tool",priority:3,assignee:"hugh",status:"todo",notes:"Local vector DB built. Anh wants online version on Google Drive.",quotes:["Anh: 'create vector db on top of google drive'"],link:"https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1773500000000000",channel:"#l-growth-hugh"},
-  {id:"task_015",title:"June robotics event content",priority:3,assignee:"hugh",status:"todo",notes:"Jun 30, $4000 budget. Planning stage.",quotes:[],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773400000000000",channel:"#lyra-growth"},
-  {id:"task_024",title:"Nam personal branding calendar",priority:3,assignee:"hugh",status:"todo",notes:"Postponed 3 weeks from Feb 26. Nam trying direct sales first.",quotes:["Nam: 'try normal sales first, 3 weeks then I'm down'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143200000000",channel:"#lyra-growth"},
-  {id:"d01",title:"Edit blog post font/outline",priority:2,assignee:"annsley",status:"done",done:"Feb 11",notes:"Fixed font outline per Gia's feedback.",quotes:[]},
-  {id:"d02",title:"Write script for fellowship video",priority:2,assignee:"annsley",status:"done",done:"Feb 16",notes:"",quotes:[]},
-  {id:"d03",title:"Outline key talking points",priority:2,assignee:"annsley",status:"done",done:"Feb 15",notes:"",quotes:[]},
-  {id:"d04",title:"Film and capture footage",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"",quotes:[]},
-  {id:"d05",title:"Edit video footage",priority:2,assignee:"duke",status:"done",done:"Feb 23",notes:"7 bumps before completion.",quotes:[]},
-  {id:"d06",title:"Review video for accuracy",priority:2,assignee:"hugh",status:"done",done:"Feb 22",notes:"",quotes:[]},
-  {id:"d07",title:"Create supporting assets",priority:2,assignee:"annsley",status:"done",done:"Feb 18",notes:"",quotes:[]},
-  {id:"d08",title:"Lyra recap by Saturday",priority:1,assignee:"annsley",status:"done",done:"Feb 14",notes:"",quotes:[]},
-  {id:"d09",title:"Capture photos ZTO shoot",priority:2,assignee:"duke",status:"done",done:"Feb 23",notes:"",quotes:[]},
-  {id:"d10",title:"Draft IG post + static + carousel",priority:2,assignee:"annsley",status:"done",done:"Feb 20",notes:"",quotes:[]},
-  {id:"d11",title:"MyLyraLife setup pfp/bio/link",priority:1,assignee:"hugh",status:"done",done:"Mar 2",notes:"",quotes:[]},
-  {id:"d12",title:"Remove blockers for Annsley posting",priority:1,assignee:"hugh",status:"done",done:"Mar 9",notes:"5 bumps then DONE.",quotes:[]},
-  {id:"d13",title:"Fellowship day one marketing",priority:2,assignee:"hugh",status:"done",done:"Feb 27",notes:"",quotes:[]},
-  {id:"d14",title:"Sydney fellow headshots",priority:2,assignee:"hugh",status:"done",done:"Mar 4",notes:"",quotes:[]},
-  {id:"d15",title:"Give Annsley Mac Mini",priority:1,assignee:"hugh",status:"done",done:"Feb 27",notes:"",quotes:[]},
-  {id:"d16",title:"Annsley checklist + process doc",priority:2,assignee:"annsley",status:"done",done:"Feb 28",notes:"",quotes:[]},
-  {id:"d17",title:"Buy DJI clip-on mics",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"",quotes:[]}
-];
-
-const LAST_UPDATED = "2026-03-13 15:11 AEDT";
+const REPO = "hughminhphan/growth-kanban";
+const DATA_PATH = "data.json";
+let TASKS = [];
+let dataSha = null;
 let activeFilter = "all";
+let saving = false;
 
+// ── GitHub API ──
+function getPat() { return localStorage.getItem("gh_pat"); }
+function setPat(p) { localStorage.setItem("gh_pat", p); }
+
+async function loadTasks() {
+  try {
+    const res = await fetch(`data.json?_=${Date.now()}`);
+    TASKS = await res.json();
+  } catch {
+    TASKS = [];
+  }
+  // Get SHA for updates
+  const pat = getPat();
+  if (pat) {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${DATA_PATH}`, {
+        headers: { Authorization: `Bearer ${pat}` }
+      });
+      const d = await r.json();
+      dataSha = d.sha;
+    } catch {}
+  }
+  renderBoard();
+}
+
+async function persistTasks(msg) {
+  const pat = getPat();
+  if (!pat) { showPatModal(); return; }
+  if (saving) return;
+  saving = true;
+  showSync("saving");
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(TASKS, null, 2))));
+    const body = { message: msg, content, sha: dataSha };
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${DATA_PATH}`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${pat}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const d = await res.json();
+    dataSha = d.content.sha;
+    showSync("saved");
+  } catch (e) {
+    console.error("Persist failed:", e);
+    showSync("error");
+  }
+  saving = false;
+}
+
+// ── Sync indicator ──
+function showSync(state) {
+  const el = document.getElementById("syncStatus");
+  el.className = "sync-status " + state;
+  el.textContent = state === "saving" ? "SYNCING..." : state === "saved" ? "SAVED" : "SYNC FAILED";
+  if (state !== "error") setTimeout(() => el.className = "sync-status hidden", 2000);
+}
+
+// ── PAT setup modal ──
+function showPatModal() {
+  const existing = getPat() || "";
+  document.getElementById("modalContainer").innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h3>GitHub Token</h3>
+        <p>Enter a GitHub fine-grained PAT with Contents read/write access to ${REPO}. Stored in localStorage only.</p>
+        <input class="pat-input" id="patInput" type="password" placeholder="github_pat_..." value="${esc(existing)}">
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-cancel" onclick="closeModal()">CANCEL</button>
+          <button class="modal-btn modal-btn-confirm" style="color:var(--emerald);border-color:rgba(74,222,128,0.25);background:var(--emerald-glow)" onclick="savePat()">SAVE</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function savePat() {
+  const v = document.getElementById("patInput").value.trim();
+  if (v) { setPat(v); loadTasks(); }
+  closeModal();
+}
+
+// ── Modals ──
+function closeModal() { document.getElementById("modalContainer").innerHTML = ""; }
+
+function showDeleteConfirm(id) {
+  const t = TASKS.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById("modalContainer").innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <h3>Delete task?</h3>
+        <p>Are you sure you want to delete <strong>${esc(t.title)}</strong>? This cannot be undone.</p>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-cancel" onclick="closeModal()">CANCEL</button>
+          <button class="modal-btn modal-btn-confirm" onclick="confirmDelete('${id}')">DELETE</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function confirmDelete(id) {
+  const t = TASKS.find(x => x.id === id);
+  const title = t ? t.title : id;
+  TASKS = TASKS.filter(x => x.id !== id);
+  closeModal();
+  renderBoard();
+  persistTasks(`Delete task: ${title}`);
+}
+
+// ── Board ──
 function getFiltered(status) {
   return TASKS.filter(t => {
     if (t.status !== status) return false;
@@ -482,7 +731,8 @@ function getFiltered(status) {
 }
 
 function renderBoard() {
-  document.getElementById("lastUpdated").textContent = LAST_UPDATED;
+  const now = new Date().toLocaleString("en-AU", { timeZone:"Australia/Sydney", year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+  document.getElementById("lastUpdated").textContent = now;
 
   const todo = getFiltered("todo");
   const inProg = getFiltered("in_progress");
@@ -511,7 +761,7 @@ function renderBoard() {
 
   document.querySelectorAll(".card").forEach(card => {
     card.addEventListener("click", e => {
-      if (e.target.classList.contains("card-check")) return;
+      if (e.target.classList.contains("card-check") || e.target.classList.contains("card-delete")) return;
       card.classList.toggle("expanded");
     });
   });
@@ -519,7 +769,7 @@ function renderBoard() {
   const p1 = TASKS.filter(t=>t.status!=="done"&&t.priority===1).length;
   const p2 = TASKS.filter(t=>t.status!=="done"&&t.priority===2).length;
   const p3 = TASKS.filter(t=>t.status!=="done"&&t.priority===3).length;
-  document.getElementById("footerStats").innerHTML = `<strong>${p1}</strong> P1 \u00b7 <strong>${p2}</strong> P2 \u00b7 <strong>${p3}</strong> P3 \u00b7 <strong>${done.length}</strong> Done (30d)`;
+  document.getElementById("footerStats").innerHTML = `<strong>${p1}</strong> P1 \u00b7 <strong>${p2}</strong> P2 \u00b7 <strong>${p3}</strong> P3 \u00b7 <strong>${done.length}</strong> Done`;
 }
 
 function renderCard(t) {
@@ -535,6 +785,7 @@ function renderCard(t) {
 
   return `
     <div class="card" data-id="${t.id}">
+      <button class="card-delete" onclick="event.stopPropagation();showDeleteConfirm('${t.id}')" title="Delete task">\u00d7</button>
       <div class="card-top">
         <input type="checkbox" class="card-check ${isDone?'is-done':''}" ${isDone?'checked disabled':''} onclick="event.stopPropagation();advanceTask('${t.id}')">
         <div class="card-title">${esc(t.title)}</div>
@@ -555,10 +806,13 @@ function advanceTask(id) {
   if (!t) return;
   const el = document.querySelector(`.card[data-id="${id}"]`);
   if (el) el.classList.add("moving");
+  const prevStatus = t.status;
   setTimeout(()=>{
     if (t.status==="todo") t.status="in_progress";
     else if (t.status==="in_progress") { t.status="done"; t.done=new Date().toLocaleDateString("en-AU",{month:"short",day:"numeric"}); }
     renderBoard();
+    const action = prevStatus === "todo" ? "Start" : "Complete";
+    persistTasks(`${action}: ${t.title}`);
   },300);
 }
 
@@ -573,7 +827,7 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
   });
 });
 
-renderBoard();
+loadTasks();
 </script>
 </body>
 </html>

@@ -1,0 +1,500 @@
+[
+  {
+    "id": "task_001",
+    "title": "Create Melb officewarming poster",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "in_progress",
+    "due": "Mon Mar 17",
+    "notes": "Event Mar 27, poster needed by Mon Mar 17 for promotion + Luma link.\nTools: CC + Remotion + Figma.",
+    "quotes": [
+      "Hugh: 'making posters today, ideally done eow'",
+      "Gia: 'posted by next monday, luma link going out then too'",
+      "Hugh: 'next monday ez'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773281266000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_002",
+    "title": "Update tagline on YouTube and Google",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "\"Shipping products...\" → \"Founding engineers for 75+ SV startups\". TT+IG done. YT+Google pending.",
+    "quotes": [
+      "Nam: 'pls update insta, tiktok, youtube, google'",
+      "Hugh: 'updated tt and ig'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773126895082189",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_008",
+    "title": "Review Hari L&L for sensitive info",
+    "priority": 1,
+    "assignee": "annsley",
+    "status": "todo",
+    "notes": "Blocker for L&L publishing pipeline. Must review via transcript or other means.",
+    "quotes": [
+      "Gia: 'Hari's has internal lyra information, should cut it all out'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_012",
+    "title": "Implement content consent system",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Rebecca upset about unauthorized tag — her manager saw it. Need: employee form backfill + Luma consent field.",
+    "quotes": [
+      "Manan: 'need to check content with eng before posting'",
+      "Anh: 'can we do a backfill on employee form'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C08A4BDALPN/p1772836570294649",
+    "channel": "#l-ops-gia"
+  },
+  {
+    "id": "task_011",
+    "title": "Annsley daily updates — consistent",
+    "priority": 1,
+    "assignee": "annsley",
+    "status": "in_progress",
+    "notes": "Bot flagged missing daily update for Mar 12. Annsley caught up Mar 13.",
+    "quotes": [
+      "Bot: 'no daily update found, please send. cc @Hugh'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773350000000000",
+    "channel": "#l-growth-annsley"
+  },
+  {
+    "id": "task_016",
+    "title": "Systemise Sydney content calendar",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "in_progress",
+    "notes": "11 days overdue, 10 bot bumps. Critical for growth team operations.",
+    "quotes": [
+      "Hugh: 'doing now chill out cuz' (Mar 9)"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772716200000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_003",
+    "title": "Buy Adobe Premiere Pro",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Premiere Pro cancelled — repurchase via Wise digital card.",
+    "quotes": [
+      "Lisa: 'login to your wise acc — order a digital card from growth group'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773220171477089",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_005",
+    "title": "Build content calendar (Slack/TG/GCal)",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "in_progress",
+    "notes": "Building slack ingest with Claude MCP. Syncs Telegram, Slack, and GCal.",
+    "quotes": [
+      "Hugh: 'building a content calendar that syncs with telegram, slack and gcal'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773024927422429",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_006",
+    "title": "Nam reel — alt version",
+    "priority": 2,
+    "assignee": "duke",
+    "status": "todo",
+    "notes": "Original reel posted. Alt version with 'dropping uni to coding' narrative.",
+    "quotes": [
+      "Nam: 'keep this version, do another with dropping uni to coding'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773227963108539",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_007",
+    "title": "Onboard Annsley into video editing",
+    "priority": 2,
+    "assignee": "duke",
+    "status": "in_progress",
+    "notes": "Duke onboarding Annsley into editing L&L videos. Training happened Mar 9.",
+    "quotes": [
+      "Annsley: '2hrs editing w dukey'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_009",
+    "title": "Isaac LinkedIn — 80/20 strategy",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "in_progress",
+    "notes": "80% credible founder-level, 20% top-of-funnel. 2x/week Tue+Fri.",
+    "quotes": [
+      "Anh: 'top-of-funnel must not derail to cater to unqualified mass'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773150000000000",
+    "channel": "#l-growth-annsley"
+  },
+  {
+    "id": "task_014",
+    "title": "Annsley LPBs — Manan, Isaac, Makeen",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "in_progress",
+    "notes": "Core growth deliverable — LinkedIn Profile Branding posts.",
+    "quotes": [
+      "Annsley: 'manan lpb, isaac lpb, makeen lpb (posting tmr)'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773100000000000",
+    "channel": "#l-growth-annsley"
+  },
+  {
+    "id": "task_013",
+    "title": "Submit timesheet",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Lisa reminded Hugh on Mar 6. May already be done.",
+    "quotes": [
+      "Lisa: '@Hugh time sheet!'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1772900000000000",
+    "channel": "#l-growth-hugh"
+  },
+  {
+    "id": "task_017",
+    "title": "Restart Software Sauce / L&L on YouTube",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Low effort, high ROI. Minimal editing. Need camera setup Fri 9-12.",
+    "quotes": [
+      "Gia: 'great for increasing client rep'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143560000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_018",
+    "title": "Buy office hard drive ($700)",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "8TB HDD + 1TB SSD + docking station. Replacing Winston's equipment.",
+    "quotes": [
+      "Hugh: '700 bucks then we're good for the rest of the year'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772600000000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_019",
+    "title": "Record engineer LinkedIn post process",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Anh: 1) Intro from Anh's account 2) Engineer writes own post 2-4 weeks later.",
+    "quotes": [
+      "Anh: 'can we have that recorded in process please'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771310640000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_020",
+    "title": "IG recap tagging — shareability",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Professional pics first, shareable at back. Tag engineers for reposts.",
+    "quotes": [
+      "Anh: 'not hitting the mark unless 15 shares'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772024400000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_021",
+    "title": "MyLyraLife — polished content",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "in_progress",
+    "notes": "Hugh POC for thelyralife IG. Follow Canva playbook. DIML pipeline.",
+    "quotes": [
+      "Nam: 'Make it polished, follow Canva playbook. No degen stuff'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771282200000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_022",
+    "title": "Engfest poster",
+    "priority": 2,
+    "assignee": "duke",
+    "status": "in_progress",
+    "notes": "Long-running. Gia checked in Mar 9. Final status unclear.",
+    "quotes": [
+      "Gia: 'how is the engfest poster going??'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771006680000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_023",
+    "title": "Share ZTO photos with Karan",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "External partner request from Zero To One via Eoin.",
+    "quotes": [
+      "Eoin: 'Karan wants photos/clips for marketing'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772078460000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_025",
+    "title": "Lyra recap — weekly Fri 5pm",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "in_progress",
+    "notes": "Recurring. Hugh reviews before posting. Tag engineers.",
+    "quotes": [
+      "Hugh: 'recap by 2pm saturday latest, friday 5pm if nothing friday night'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771800000000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_010",
+    "title": "Annsley n8n leadership updates",
+    "priority": 3,
+    "assignee": "annsley",
+    "status": "in_progress",
+    "notes": "Building n8n workflow for auto leadership updates. 90% done.",
+    "quotes": [
+      "Annsley: '90% there w n8n'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773200000000000",
+    "channel": "#l-growth-annsley"
+  },
+  {
+    "id": "task_004",
+    "title": "Investigate online photo search tool",
+    "priority": 3,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Local vector DB built. Anh wants online version on Google Drive.",
+    "quotes": [
+      "Anh: 'create vector db on top of google drive'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1773500000000000",
+    "channel": "#l-growth-hugh"
+  },
+  {
+    "id": "task_015",
+    "title": "June robotics event content",
+    "priority": 3,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Jun 30, $4000 budget. Planning stage.",
+    "quotes": [],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773400000000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "task_024",
+    "title": "Nam personal branding calendar",
+    "priority": 3,
+    "assignee": "hugh",
+    "status": "todo",
+    "notes": "Postponed 3 weeks from Feb 26. Nam trying direct sales first.",
+    "quotes": [
+      "Nam: 'try normal sales first, 3 weeks then I'm down'"
+    ],
+    "link": "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143200000000",
+    "channel": "#lyra-growth"
+  },
+  {
+    "id": "d01",
+    "title": "Edit blog post font/outline",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 11",
+    "notes": "Fixed font outline per Gia's feedback.",
+    "quotes": []
+  },
+  {
+    "id": "d02",
+    "title": "Write script for fellowship video",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 16",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d03",
+    "title": "Outline key talking points",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 15",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d04",
+    "title": "Film and capture footage",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Feb 16",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d05",
+    "title": "Edit video footage",
+    "priority": 2,
+    "assignee": "duke",
+    "status": "done",
+    "done": "Feb 23",
+    "notes": "7 bumps before completion.",
+    "quotes": []
+  },
+  {
+    "id": "d06",
+    "title": "Review video for accuracy",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Feb 22",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d07",
+    "title": "Create supporting assets",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 18",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d08",
+    "title": "Lyra recap by Saturday",
+    "priority": 1,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 14",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d09",
+    "title": "Capture photos ZTO shoot",
+    "priority": 2,
+    "assignee": "duke",
+    "status": "done",
+    "done": "Feb 23",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d10",
+    "title": "Draft IG post + static + carousel",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 20",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d11",
+    "title": "MyLyraLife setup pfp/bio/link",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Mar 2",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d12",
+    "title": "Remove blockers for Annsley posting",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Mar 9",
+    "notes": "5 bumps then DONE.",
+    "quotes": []
+  },
+  {
+    "id": "d13",
+    "title": "Fellowship day one marketing",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Feb 27",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d14",
+    "title": "Sydney fellow headshots",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Mar 4",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d15",
+    "title": "Give Annsley Mac Mini",
+    "priority": 1,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Feb 27",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d16",
+    "title": "Annsley checklist + process doc",
+    "priority": 2,
+    "assignee": "annsley",
+    "status": "done",
+    "done": "Feb 28",
+    "notes": "",
+    "quotes": []
+  },
+  {
+    "id": "d17",
+    "title": "Buy DJI clip-on mics",
+    "priority": 2,
+    "assignee": "hugh",
+    "status": "done",
+    "done": "Feb 16",
+    "notes": "",
+    "quotes": []
+  }
+]
