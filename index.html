@@ -40,8 +40,17 @@
   .card { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:12px; cursor:pointer; transition:all 0.15s; }
   .card:hover { border-color:var(--text-muted); }
   .card.expanded .card-notes { display:block; }
+  .card.moving { animation:slideOut 0.3s ease-out; opacity:0; transform:translateX(40px); }
+  @keyframes slideOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(40px); } }
   .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
   .card-title { font-size:13px; font-weight:500; line-height:1.4; flex:1; }
+
+  .card-checkbox { appearance:none; -webkit-appearance:none; width:16px; height:16px; border:1.5px solid var(--border); border-radius:3px; cursor:pointer; flex-shrink:0; margin-top:1px; transition:all 0.15s; position:relative; }
+  .card-checkbox:hover { border-color:var(--blue); background:rgba(88,166,255,0.1); }
+  .card-checkbox:checked { background:var(--green); border-color:var(--green); }
+  .card-checkbox:checked::after { content:"\2713"; position:absolute; top:-1px; left:2px; font-size:11px; color:white; }
+  .card-checkbox.done-check { pointer-events:none; opacity:0.4; }
+  .card-checkbox.done-check:checked { background:var(--green); border-color:var(--green); opacity:0.4; }
   .card-meta { display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
 
   .tag { font-size:10px; font-weight:600; padding:2px 6px; border-radius:3px; letter-spacing:0.5px; }
@@ -350,9 +359,15 @@ function renderCard(t, colKey) {
     notesHtml += `<p><a href="${t.link}" target="_blank">View in Slack \u2192</a> ${t.channel || ""}</p>`;
   }
 
+  const isDone = t.status === "done";
+  const checkClass = isDone ? "card-checkbox done-check" : "card-checkbox";
+  const checked = isDone ? "checked" : "";
+  const nextLabel = t.status === "todo" ? "Start" : t.status === "in_progress" ? "Done" : "";
+
   return `
     <div class="card" data-id="${t.id}">
       <div class="card-top">
+        ${!isDone ? `<input type="checkbox" class="${checkClass}" ${checked} data-task-id="${t.id}" title="${nextLabel}" onclick="event.stopPropagation(); advanceTask('${t.id}')">` : `<input type="checkbox" class="${checkClass}" checked disabled>`}
         <div class="card-title">${escapeHtml(t.title)}</div>
         ${notesHtml ? '<div class="expand-icon">\u25BC</div>' : ''}
       </div>
@@ -361,6 +376,7 @@ function renderCard(t, colKey) {
         <span class="assignee">@${assigneeLabel}</span>
         ${t.due ? `<span class="due">\u{1F4C5} ${t.due}</span>` : ""}
         ${t.done ? `<span class="assignee">\u2713 ${t.done}</span>` : ""}
+        ${nextLabel ? `<span class="assignee" style="color:var(--blue);">\u2192 ${nextLabel}</span>` : ""}
       </div>
       ${notesHtml ? `<div class="card-notes">${notesHtml}</div>` : ""}
     </div>
@@ -371,6 +387,24 @@ function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
+}
+
+function advanceTask(taskId) {
+  const task = TASKS.find(t => t.id === taskId);
+  if (!task) return;
+
+  const card = document.querySelector(`.card[data-id="${taskId}"]`);
+  if (card) card.classList.add("moving");
+
+  setTimeout(() => {
+    if (task.status === "todo") {
+      task.status = "in_progress";
+    } else if (task.status === "in_progress") {
+      task.status = "done";
+      task.done = new Date().toLocaleDateString("en-AU", { month:"short", day:"numeric" });
+    }
+    renderBoard();
+  }, 300);
 }
 
 // Filter buttons
