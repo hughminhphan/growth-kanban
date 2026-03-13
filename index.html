@@ -3,92 +3,404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Growth Team Command Center</title>
+<title>Growth Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --red: #f85149;
-    --red-bg: rgba(248,81,73,0.12);
-    --yellow: #d29922;
-    --yellow-bg: rgba(210,153,34,0.12);
-    --green: #3fb950;
-    --green-bg: rgba(63,185,80,0.12);
-    --blue: #58a6ff;
+    --bg: #08090a;
+    --surface: #111214;
+    --surface-raised: #181a1e;
+    --border: #232529;
+    --border-hover: #3a3d42;
+    --text: #f0f0f0;
+    --text-secondary: #94969a;
+    --text-dim: #5c5e63;
+    --accent: #e8c468;
+    --accent-dim: rgba(232,196,104,0.08);
+    --red: #ff6b6b;
+    --red-glow: rgba(255,107,107,0.06);
+    --amber: #f0b952;
+    --amber-glow: rgba(240,185,82,0.06);
+    --emerald: #4ade80;
+    --emerald-glow: rgba(74,222,128,0.06);
+    --blue: #6ea8fe;
+    --radius: 10px;
+    --radius-sm: 6px;
   }
+
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-  header { padding:20px 32px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-  header h1 { font-size:20px; font-weight:600; }
-  header .meta { color:var(--text-muted); font-size:13px; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  .filters { padding:12px 32px; display:flex; gap:8px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
-  .filter-btn { background:var(--surface); border:1px solid var(--border); color:var(--text-muted); padding:4px 12px; border-radius:20px; cursor:pointer; font-size:12px; transition:all 0.15s; }
-  .filter-btn:hover, .filter-btn.active { color:var(--text); border-color:var(--blue); background:rgba(88,166,255,0.1); }
+  /* Subtle grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
 
-  .board { display:flex; gap:16px; padding:20px 32px; overflow-x:auto; min-height:calc(100vh - 120px); align-items:flex-start; }
+  /* ── Header ── */
+  header {
+    padding: 32px 40px 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
 
-  .column { min-width:320px; max-width:360px; flex:1; background:var(--surface); border-radius:8px; border:1px solid var(--border); }
-  .column-header { padding:12px 16px; font-weight:600; font-size:14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
-  .column-header .count { background:var(--border); color:var(--text-muted); font-size:11px; padding:2px 8px; border-radius:10px; font-weight:500; }
-  .column-cards { padding:8px; display:flex; flex-direction:column; gap:6px; max-height:calc(100vh - 200px); overflow-y:auto; }
+  .logo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-  .card { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:12px; cursor:pointer; transition:all 0.15s; }
-  .card:hover { border-color:var(--text-muted); }
-  .card.expanded .card-notes { display:block; }
-  .card.moving { animation:slideOut 0.3s ease-out; opacity:0; transform:translateX(40px); }
-  @keyframes slideOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(40px); } }
-  .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
-  .card-title { font-size:13px; font-weight:500; line-height:1.4; flex:1; }
+  .logo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
 
-  .card-checkbox { appearance:none; -webkit-appearance:none; width:16px; height:16px; border:1.5px solid var(--border); border-radius:3px; cursor:pointer; flex-shrink:0; margin-top:1px; transition:all 0.15s; position:relative; }
-  .card-checkbox:hover { border-color:var(--blue); background:rgba(88,166,255,0.1); }
-  .card-checkbox:checked { background:var(--green); border-color:var(--green); }
-  .card-checkbox:checked::after { content:"\2713"; position:absolute; top:-1px; left:2px; font-size:11px; color:white; }
-  .card-checkbox.done-check { pointer-events:none; opacity:0.4; }
-  .card-checkbox.done-check:checked { background:var(--green); border-color:var(--green); opacity:0.4; }
-  .card-meta { display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+  .logo h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
 
-  .tag { font-size:10px; font-weight:600; padding:2px 6px; border-radius:3px; letter-spacing:0.5px; }
-  .tag-p1 { color:var(--red); background:var(--red-bg); }
-  .tag-p2 { color:var(--yellow); background:var(--yellow-bg); }
-  .tag-p3 { color:var(--green); background:var(--green-bg); }
+  .header-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.6;
+  }
 
-  .assignee { font-size:11px; color:var(--text-muted); background:var(--surface); padding:2px 8px; border-radius:10px; }
-  .due { font-size:11px; color:var(--red); }
+  /* ── Filters ── */
+  .filters {
+    padding: 20px 40px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
 
-  .card-notes { display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); font-size:12px; color:var(--text-muted); line-height:1.6; }
-  .card-notes p { margin-bottom:6px; }
-  .card-notes a { color:var(--blue); text-decoration:none; }
-  .card-notes a:hover { text-decoration:underline; }
-  .card-notes .quote { border-left:2px solid var(--border); padding-left:8px; margin:6px 0; font-style:italic; font-size:11px; }
+  .filter-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 8px;
+  }
 
-  .expand-icon { color:var(--text-muted); font-size:10px; flex-shrink:0; margin-top:2px; }
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
 
-  .column.done .card { opacity:0.6; }
-  .column.done .card:hover { opacity:1; }
+  .filter-btn:hover {
+    color: var(--text-secondary);
+    border-color: var(--border-hover);
+    background: var(--surface);
+  }
 
-  .stats { display:flex; gap:16px; padding:0 32px; margin-bottom:0; }
-  .stat { font-size:12px; color:var(--text-muted); }
-  .stat strong { color:var(--text); }
+  .filter-btn.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
 
-  @media (max-width: 768px) {
-    .board { flex-direction:column; padding:12px; }
-    .column { min-width:100%; max-width:100%; }
-    header { padding:16px; }
-    .filters { padding:8px 16px; }
+  /* ── Board ── */
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin: 0 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .column {
+    background: var(--surface);
+    min-height: calc(100vh - 200px);
+  }
+
+  .column-header {
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 10;
+  }
+
+  .column-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .column-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+
+  .column-cards {
+    padding: 0 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface-raised);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+
+  .card.expanded .card-notes { display: block; }
+
+  .card.moving {
+    animation: slideOut 0.3s ease-out forwards;
+  }
+
+  @keyframes slideOut {
+    to { opacity: 0; transform: translateX(30px) scale(0.98); }
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* ── Checkbox ── */
+  .card-check {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border: 1.5px solid var(--border-hover);
+    border-radius: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.2s ease;
+    position: relative;
+    background: transparent;
+  }
+
+  .card-check:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  .card-check:checked {
+    background: var(--emerald);
+    border-color: var(--emerald);
+  }
+
+  .card-check:checked::after {
+    content: "\2713";
+    position: absolute;
+    top: -1px;
+    left: 2px;
+    font-size: 10px;
+    color: #08090a;
+    font-weight: 700;
+  }
+
+  .card-check.is-done {
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 450;
+    line-height: 1.45;
+    flex: 1;
+    color: var(--text);
+  }
+
+  .card-action {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .card:hover .card-action { opacity: 1; }
+
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Tags ── */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 3px;
+  }
+
+  .tag-p1 { color: var(--red); background: var(--red-glow); border: 1px solid rgba(255,107,107,0.15); }
+  .tag-p2 { color: var(--amber); background: var(--amber-glow); border: 1px solid rgba(240,185,82,0.15); }
+  .tag-p3 { color: var(--emerald); background: var(--emerald-glow); border: 1px solid rgba(74,222,128,0.15); }
+
+  .assignee-tag {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .due-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--red);
+    letter-spacing: 0.5px;
+  }
+
+  .done-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Card Notes ── */
+  .card-notes {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .card-notes p { margin-bottom: 8px; }
+
+  .card-notes a {
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .card-notes a:hover { text-decoration: underline; }
+
+  .card-notes .quote {
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+    margin: 8px 0;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ── Done column ── */
+  .column.col-done .card {
+    opacity: 0.45;
+  }
+  .column.col-done .card:hover {
+    opacity: 0.75;
+  }
+
+  /* ── Footer stats ── */
+  .footer {
+    padding: 20px 40px 40px;
+    display: flex;
+    gap: 32px;
+  }
+
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .stat strong {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .board {
+      grid-template-columns: 1fr;
+      margin: 0 16px;
+    }
+    header { padding: 20px 16px 0; flex-direction: column; align-items: flex-start; gap: 12px; }
+    .filters { padding: 16px; }
+    .column { min-height: auto; }
+    .footer { padding: 20px 16px; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Growth Team Command Center</h1>
-  <div class="meta">Last updated: <span id="lastUpdated"></span></div>
+  <div class="logo">
+    <span class="logo-label">Lyra Technologies</span>
+    <h1>Growth Command Center</h1>
+  </div>
+  <div class="header-meta">
+    <div id="lastUpdated"></div>
+    <div id="taskStats"></div>
+  </div>
 </header>
 
 <div class="filters">
@@ -96,7 +408,7 @@
   <button class="filter-btn" data-filter="hugh">Hugh</button>
   <button class="filter-btn" data-filter="duke">Duke</button>
   <button class="filter-btn" data-filter="annsley">Annsley</button>
-  <span style="border-left:1px solid var(--border);margin:0 4px"></span>
+  <div class="filter-divider"></div>
   <button class="filter-btn" data-filter="p1">P1</button>
   <button class="filter-btn" data-filter="p2">P2</button>
   <button class="filter-btn" data-filter="p3">P3</button>
@@ -104,315 +416,159 @@
 
 <div class="board" id="board"></div>
 
+<div class="footer">
+  <div class="stat" id="footerStats"></div>
+</div>
+
 <script>
 const TASKS = [
-  {
-    id: "task_001", title: "Create Melb officewarming poster", priority: 1, assignee: "hugh", status: "in_progress",
-    due: "Mon Mar 17",
-    notes: "Event Mar 27, poster needed by Mon Mar 17 for promotion + Luma link.\nTools: CC + Remotion + Figma.",
-    quotes: ["Hugh: 'making posters today, ideally done eow'", "Gia: 'posted by next monday, luma link going out then too'", "Hugh: 'next monday ez'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773281266000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_002", title: "Update tagline on YouTube and Google", priority: 1, assignee: "hugh", status: "todo",
-    notes: "\"Shipping products...\" to \"Founding engineers for 75+ SV startups\". TT+IG done. YT+Google pending.",
-    quotes: ["Nam: 'pls update insta, tiktok, youtube, google'", "Hugh: 'updated tt and ig'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773126895082189",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_008", title: "Review Hari L&L for sensitive info", priority: 1, assignee: "annsley", status: "todo",
-    notes: "Blocker for L&L publishing pipeline. Must review via transcript or other means.",
-    quotes: ["Gia: 'Hari's has internal lyra information, should cut it all out'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_012", title: "Implement content consent system", priority: 1, assignee: "hugh", status: "todo",
-    notes: "Rebecca upset about unauthorized tag \u2014 her manager saw it. Need: employee form backfill with marketing consent field + Luma event consent field.",
-    quotes: ["Manan: 'need to check content with eng before posting'", "Anh: 'can we do a backfill on employee form to be tagged for marketing content'"],
-    link: "https://lyra-technologies.slack.com/archives/C08A4BDALPN/p1772836570294649",
-    channel: "#l-ops-gia"
-  },
-  {
-    id: "task_011", title: "Annsley daily updates \u2014 consistent", priority: 1, assignee: "annsley", status: "in_progress",
-    notes: "Bot flagged missing daily update for Mar 12. Annsley caught up Mar 13. Must maintain daily cadence.",
-    quotes: ["Bot: 'no daily update found, please send. cc @Hugh'"],
-    link: "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773350000000000",
-    channel: "#l-growth-annsley"
-  },
-  {
-    id: "task_016", title: "Systemise Sydney content calendar", priority: 1, assignee: "hugh", status: "in_progress",
-    notes: "11 days overdue, 10 bot bumps with no completion. Critical for growth team operations.",
-    quotes: ["Hugh: 'doing now chill out cuz' (Mar 9)", "Still getting bumped \u2014 bump 10"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772716200000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_003", title: "Buy Adobe Premiere Pro", priority: 2, assignee: "hugh", status: "todo",
-    notes: "Premiere Pro cancelled \u2014 need to repurchase via Wise digital card.",
-    quotes: ["Lisa: 'login to your wise acc \u2014 you're in the growth group so order a digital card there and use that pls'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773220171477089",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_005", title: "Build content calendar (Slack/TG/GCal)", priority: 2, assignee: "hugh", status: "in_progress",
-    notes: "Currently building slack ingest to todo with Claude MCP. Syncs Telegram, Slack, and GCal.",
-    quotes: ["Hugh: 'building a content calendar that syncs with telegram, slack and gcal'", "Gia: 'ill add this on my todos'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773024927422429",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_006", title: "Nam reel \u2014 alt version", priority: 2, assignee: "duke", status: "todo",
-    notes: "Original reel posted. Nam wants alt version with 'dropping uni to coding' narrative.",
-    quotes: ["Nam: 'keep this version as is, do another version with dropping uni to coding'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773227963108539",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_007", title: "Onboard Annsley into video editing", priority: 2, assignee: "duke", status: "in_progress",
-    notes: "Duke onboarding Annsley into editing L&L videos. Training happened Mar 9.",
-    quotes: ["Duke: 'ill teach her the entire adobe suite on monday'", "Annsley: '2hrs editing w dukey'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_009", title: "Isaac LinkedIn \u2014 80/20 strategy", priority: 2, assignee: "annsley", status: "in_progress",
-    notes: "80% credible founder-level design content, 20% top-of-funnel. 2x/week Tue+Fri.",
-    quotes: ["Anh: 'top-of-funnel must not derail to cater to unqualified mass'"],
-    link: "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773150000000000",
-    channel: "#l-growth-annsley"
-  },
-  {
-    id: "task_014", title: "Annsley LPBs \u2014 Manan, Isaac, Makeen", priority: 2, assignee: "annsley", status: "in_progress",
-    notes: "Core growth deliverable \u2014 LinkedIn Profile Branding posts. Weekly posting cadence.",
-    quotes: ["Annsley: 'manan (fellowship) lpb, isaac lpb, makeen lpb (posting tmr)'"],
-    link: "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773100000000000",
-    channel: "#l-growth-annsley"
-  },
-  {
-    id: "task_013", title: "Submit timesheet", priority: 2, assignee: "hugh", status: "todo",
-    notes: "Lisa reminded Hugh about timesheet on Mar 6. May already be done.",
-    quotes: ["Lisa: '@Hugh time sheet!'"],
-    link: "https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1772900000000000",
-    channel: "#l-growth-hugh"
-  },
-  {
-    id: "task_017", title: "Restart Software Sauce / L&L on YouTube", priority: 2, assignee: "hugh", status: "todo",
-    notes: "Agreed low effort, high ROI. Minimal editing \u2014 just intro overlay + trim. Need camera setup Fri 9-12.",
-    quotes: ["Gia: 'great for increasing client rep'", "Hugh: 'dont bother editing unless company stuff that needs cutting'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143560000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_018", title: "Buy office hard drive ($700)", priority: 2, assignee: "hugh", status: "todo",
-    notes: "8TB HDD ($387) + 1TB NVMe SSD ($221) + docking station ($99). Replacing Winston's equipment.",
-    quotes: ["Hugh: '700 bucks but then we are good for storage for the rest of the year'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772600000000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_019", title: "Record engineer LinkedIn post process", priority: 2, assignee: "hugh", status: "todo",
-    notes: "Anh directive: 1) Professional intro from Anh's account 2) Engineer writes own cultural post 2-4 weeks later.",
-    quotes: ["Anh: 'can we have that recorded in process please, and execute on recent engineers'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771310640000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_020", title: "IG recap tagging \u2014 shareability", priority: 2, assignee: "hugh", status: "todo",
-    notes: "Optimize for engineer sharing. Professional pics first, cultural/shareable at back of carousel.",
-    quotes: ["Anh: 'not hitting the mark unless there's 15 shares. Tag engineers so they repost'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772024400000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_021", title: "MyLyraLife \u2014 polished content", priority: 2, assignee: "hugh", status: "in_progress",
-    notes: "Hugh POC for thelyralife IG account. Follow Canva playbook. DIML content pipeline.",
-    quotes: ["Nam: 'Make it polished too yeah follow Canva playbook. No degen stuff'", "First win: NYU student cold DM'd after seeing 3 reels"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771282200000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_022", title: "Engfest poster", priority: 2, assignee: "duke", status: "in_progress",
-    notes: "Long-running. Gia checked in Mar 9. Duke had draft but final status unclear.",
-    quotes: ["Gia: 'how is the engfest poster going??'", "Duke: 'workin on dat today should be done eod' (Feb 18)"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771006680000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_023", title: "Share ZTO photos with Karan", priority: 2, assignee: "hugh", status: "todo",
-    notes: "External partner request from Karan (Zero To One) via Eoin. Wants photos/clips for marketing.",
-    quotes: ["Eoin: 'Karan wants to check if you can share pictures/clips for marketing purposes'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772078460000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_025", title: "Lyra recap \u2014 weekly Fri 5pm", priority: 2, assignee: "annsley", status: "in_progress",
-    notes: "Recurring weekly deliverable. Hugh reviews before posting on all platforms. Tag engineers.",
-    quotes: ["Hugh: 'lyra recap by 2pm saturday latest, friday 5pm if nothing friday night'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771800000000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_010", title: "Annsley n8n leadership updates", priority: 3, assignee: "annsley", status: "in_progress",
-    notes: "Building n8n workflow to auto-send leadership updates. 90% done.",
-    quotes: ["Annsley: '90% there w n8n'"],
-    link: "https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773200000000000",
-    channel: "#l-growth-annsley"
-  },
-  {
-    id: "task_004", title: "Investigate online photo search tool", priority: 3, assignee: "hugh", status: "todo",
-    notes: "Hugh built local vector DB with CLIP + OCR. Anh wants it online on top of Google Drive.",
-    quotes: ["Anh: 'any way to have this done online? create vector db on top of google drive'"],
-    link: "https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1773500000000000",
-    channel: "#l-growth-hugh"
-  },
-  {
-    id: "task_015", title: "June robotics event content", priority: 3, assignee: "hugh", status: "todo",
-    notes: "Jun 30, 2PM, 50-100 headcount, $4000 budget. Planning stage.",
-    quotes: [],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773400000000000",
-    channel: "#lyra-growth"
-  },
-  {
-    id: "task_024", title: "Nam personal branding calendar", priority: 3, assignee: "hugh", status: "todo",
-    notes: "Postponed 3 weeks from Feb 26. Nam trying direct sales first.",
-    quotes: ["Nam: 'I'm gonna try normal sales first and if it doesn't yield result in 3 weeks I'm down to do this'"],
-    link: "https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143200000000",
-    channel: "#lyra-growth"
-  },
-  // Done tasks
+  {id:"task_001",title:"Create Melb officewarming poster",priority:1,assignee:"hugh",status:"in_progress",due:"Mon Mar 17",notes:"Event Mar 27, poster needed by Mon Mar 17 for promotion + Luma link.\nTools: CC + Remotion + Figma.",quotes:["Hugh: 'making posters today, ideally done eow'","Gia: 'posted by next monday, luma link going out then too'","Hugh: 'next monday ez'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773281266000000",channel:"#lyra-growth"},
+  {id:"task_002",title:"Update tagline on YouTube and Google",priority:1,assignee:"hugh",status:"todo",notes:"\"Shipping products...\" \u2192 \"Founding engineers for 75+ SV startups\". TT+IG done. YT+Google pending.",quotes:["Nam: 'pls update insta, tiktok, youtube, google'","Hugh: 'updated tt and ig'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773126895082189",channel:"#lyra-growth"},
+  {id:"task_008",title:"Review Hari L&L for sensitive info",priority:1,assignee:"annsley",status:"todo",notes:"Blocker for L&L publishing pipeline. Must review via transcript or other means.",quotes:["Gia: 'Hari's has internal lyra information, should cut it all out'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",channel:"#lyra-growth"},
+  {id:"task_012",title:"Implement content consent system",priority:1,assignee:"hugh",status:"todo",notes:"Rebecca upset about unauthorized tag \u2014 her manager saw it. Need: employee form backfill + Luma consent field.",quotes:["Manan: 'need to check content with eng before posting'","Anh: 'can we do a backfill on employee form'"],link:"https://lyra-technologies.slack.com/archives/C08A4BDALPN/p1772836570294649",channel:"#l-ops-gia"},
+  {id:"task_011",title:"Annsley daily updates \u2014 consistent",priority:1,assignee:"annsley",status:"in_progress",notes:"Bot flagged missing daily update for Mar 12. Annsley caught up Mar 13.",quotes:["Bot: 'no daily update found, please send. cc @Hugh'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773350000000000",channel:"#l-growth-annsley"},
+  {id:"task_016",title:"Systemise Sydney content calendar",priority:1,assignee:"hugh",status:"in_progress",notes:"11 days overdue, 10 bot bumps. Critical for growth team operations.",quotes:["Hugh: 'doing now chill out cuz' (Mar 9)"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772716200000000",channel:"#lyra-growth"},
+  {id:"task_003",title:"Buy Adobe Premiere Pro",priority:2,assignee:"hugh",status:"todo",notes:"Premiere Pro cancelled \u2014 repurchase via Wise digital card.",quotes:["Lisa: 'login to your wise acc \u2014 order a digital card from growth group'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773220171477089",channel:"#lyra-growth"},
+  {id:"task_005",title:"Build content calendar (Slack/TG/GCal)",priority:2,assignee:"hugh",status:"in_progress",notes:"Building slack ingest with Claude MCP. Syncs Telegram, Slack, and GCal.",quotes:["Hugh: 'building a content calendar that syncs with telegram, slack and gcal'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773024927422429",channel:"#lyra-growth"},
+  {id:"task_006",title:"Nam reel \u2014 alt version",priority:2,assignee:"duke",status:"todo",notes:"Original reel posted. Alt version with 'dropping uni to coding' narrative.",quotes:["Nam: 'keep this version, do another with dropping uni to coding'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773227963108539",channel:"#lyra-growth"},
+  {id:"task_007",title:"Onboard Annsley into video editing",priority:2,assignee:"duke",status:"in_progress",notes:"Duke onboarding Annsley into editing L&L videos. Training happened Mar 9.",quotes:["Annsley: '2hrs editing w dukey'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772769332803169",channel:"#lyra-growth"},
+  {id:"task_009",title:"Isaac LinkedIn \u2014 80/20 strategy",priority:2,assignee:"annsley",status:"in_progress",notes:"80% credible founder-level, 20% top-of-funnel. 2x/week Tue+Fri.",quotes:["Anh: 'top-of-funnel must not derail to cater to unqualified mass'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773150000000000",channel:"#l-growth-annsley"},
+  {id:"task_014",title:"Annsley LPBs \u2014 Manan, Isaac, Makeen",priority:2,assignee:"annsley",status:"in_progress",notes:"Core growth deliverable \u2014 LinkedIn Profile Branding posts.",quotes:["Annsley: 'manan lpb, isaac lpb, makeen lpb (posting tmr)'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773100000000000",channel:"#l-growth-annsley"},
+  {id:"task_013",title:"Submit timesheet",priority:2,assignee:"hugh",status:"todo",notes:"Lisa reminded Hugh on Mar 6. May already be done.",quotes:["Lisa: '@Hugh time sheet!'"],link:"https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1772900000000000",channel:"#l-growth-hugh"},
+  {id:"task_017",title:"Restart Software Sauce / L&L on YouTube",priority:2,assignee:"hugh",status:"todo",notes:"Low effort, high ROI. Minimal editing. Need camera setup Fri 9-12.",quotes:["Gia: 'great for increasing client rep'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143560000000",channel:"#lyra-growth"},
+  {id:"task_018",title:"Buy office hard drive ($700)",priority:2,assignee:"hugh",status:"todo",notes:"8TB HDD + 1TB SSD + docking station. Replacing Winston's equipment.",quotes:["Hugh: '700 bucks then we're good for the rest of the year'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772600000000000",channel:"#lyra-growth"},
+  {id:"task_019",title:"Record engineer LinkedIn post process",priority:2,assignee:"hugh",status:"todo",notes:"Anh: 1) Intro from Anh's account 2) Engineer writes own post 2-4 weeks later.",quotes:["Anh: 'can we have that recorded in process please'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771310640000000",channel:"#lyra-growth"},
+  {id:"task_020",title:"IG recap tagging \u2014 shareability",priority:2,assignee:"hugh",status:"todo",notes:"Professional pics first, shareable at back. Tag engineers for reposts.",quotes:["Anh: 'not hitting the mark unless 15 shares'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772024400000000",channel:"#lyra-growth"},
+  {id:"task_021",title:"MyLyraLife \u2014 polished content",priority:2,assignee:"hugh",status:"in_progress",notes:"Hugh POC for thelyralife IG. Follow Canva playbook. DIML pipeline.",quotes:["Nam: 'Make it polished, follow Canva playbook. No degen stuff'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771282200000000",channel:"#lyra-growth"},
+  {id:"task_022",title:"Engfest poster",priority:2,assignee:"duke",status:"in_progress",notes:"Long-running. Gia checked in Mar 9. Final status unclear.",quotes:["Gia: 'how is the engfest poster going??'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771006680000000",channel:"#lyra-growth"},
+  {id:"task_023",title:"Share ZTO photos with Karan",priority:2,assignee:"hugh",status:"todo",notes:"External partner request from Zero To One via Eoin.",quotes:["Eoin: 'Karan wants photos/clips for marketing'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772078460000000",channel:"#lyra-growth"},
+  {id:"task_025",title:"Lyra recap \u2014 weekly Fri 5pm",priority:2,assignee:"annsley",status:"in_progress",notes:"Recurring. Hugh reviews before posting. Tag engineers.",quotes:["Hugh: 'recap by 2pm saturday latest, friday 5pm if nothing friday night'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1771800000000000",channel:"#lyra-growth"},
+  {id:"task_010",title:"Annsley n8n leadership updates",priority:3,assignee:"annsley",status:"in_progress",notes:"Building n8n workflow for auto leadership updates. 90% done.",quotes:["Annsley: '90% there w n8n'"],link:"https://lyra-technologies.slack.com/archives/C09FK4R4ASH/p1773200000000000",channel:"#l-growth-annsley"},
+  {id:"task_004",title:"Investigate online photo search tool",priority:3,assignee:"hugh",status:"todo",notes:"Local vector DB built. Anh wants online version on Google Drive.",quotes:["Anh: 'create vector db on top of google drive'"],link:"https://lyra-technologies.slack.com/archives/C09E44QUK3K/p1773500000000000",channel:"#l-growth-hugh"},
+  {id:"task_015",title:"June robotics event content",priority:3,assignee:"hugh",status:"todo",notes:"Jun 30, $4000 budget. Planning stage.",quotes:[],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1773400000000000",channel:"#lyra-growth"},
+  {id:"task_024",title:"Nam personal branding calendar",priority:3,assignee:"hugh",status:"todo",notes:"Postponed 3 weeks from Feb 26. Nam trying direct sales first.",quotes:["Nam: 'try normal sales first, 3 weeks then I'm down'"],link:"https://lyra-technologies.slack.com/archives/C099DEQNJ48/p1772143200000000",channel:"#lyra-growth"},
   {id:"d01",title:"Edit blog post font/outline",priority:2,assignee:"annsley",status:"done",done:"Feb 11",notes:"Fixed font outline per Gia's feedback.",quotes:[]},
-  {id:"d02",title:"Write script for fellowship video",priority:2,assignee:"annsley",status:"done",done:"Feb 16",notes:"Script for Manan's fellowship video.",quotes:[]},
-  {id:"d03",title:"Outline key talking points",priority:2,assignee:"annsley",status:"done",done:"Feb 15",notes:"Talking points for fellowship video.",quotes:[]},
-  {id:"d04",title:"Film and capture footage",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"Filmed footage, overseen by Gia.",quotes:[]},
+  {id:"d02",title:"Write script for fellowship video",priority:2,assignee:"annsley",status:"done",done:"Feb 16",notes:"",quotes:[]},
+  {id:"d03",title:"Outline key talking points",priority:2,assignee:"annsley",status:"done",done:"Feb 15",notes:"",quotes:[]},
+  {id:"d04",title:"Film and capture footage",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"",quotes:[]},
   {id:"d05",title:"Edit video footage",priority:2,assignee:"duke",status:"done",done:"Feb 23",notes:"7 bumps before completion.",quotes:[]},
-  {id:"d06",title:"Review video for accuracy",priority:2,assignee:"hugh",status:"done",done:"Feb 22",notes:"Gia reviewed, Hugh took over.",quotes:[]},
+  {id:"d06",title:"Review video for accuracy",priority:2,assignee:"hugh",status:"done",done:"Feb 22",notes:"",quotes:[]},
   {id:"d07",title:"Create supporting assets",priority:2,assignee:"annsley",status:"done",done:"Feb 18",notes:"",quotes:[]},
   {id:"d08",title:"Lyra recap by Saturday",priority:1,assignee:"annsley",status:"done",done:"Feb 14",notes:"",quotes:[]},
-  {id:"d09",title:"Capture photos ZTO shoot",priority:2,assignee:"duke",status:"done",done:"Feb 23",notes:"4 bumps then DONE.",quotes:[]},
-  {id:"d10",title:"Draft IG post + static + carousel",priority:2,assignee:"annsley",status:"done",done:"Feb 20",notes:"ZTO photoshoot content.",quotes:[]},
-  {id:"d11",title:"MyLyraLife setup pfp/bio/link",priority:1,assignee:"hugh",status:"done",done:"Mar 2",notes:"Nam flagged missing pfp/bio.",quotes:[]},
+  {id:"d09",title:"Capture photos ZTO shoot",priority:2,assignee:"duke",status:"done",done:"Feb 23",notes:"",quotes:[]},
+  {id:"d10",title:"Draft IG post + static + carousel",priority:2,assignee:"annsley",status:"done",done:"Feb 20",notes:"",quotes:[]},
+  {id:"d11",title:"MyLyraLife setup pfp/bio/link",priority:1,assignee:"hugh",status:"done",done:"Mar 2",notes:"",quotes:[]},
   {id:"d12",title:"Remove blockers for Annsley posting",priority:1,assignee:"hugh",status:"done",done:"Mar 9",notes:"5 bumps then DONE.",quotes:[]},
-  {id:"d13",title:"Fellowship day one marketing",priority:2,assignee:"hugh",status:"done",done:"Feb 27",notes:"Coordinated with Melb team.",quotes:[]},
+  {id:"d13",title:"Fellowship day one marketing",priority:2,assignee:"hugh",status:"done",done:"Feb 27",notes:"",quotes:[]},
   {id:"d14",title:"Sydney fellow headshots",priority:2,assignee:"hugh",status:"done",done:"Mar 4",notes:"",quotes:[]},
-  {id:"d15",title:"Give Annsley Mac Mini",priority:1,assignee:"hugh",status:"done",done:"Feb 27",notes:"Nam directive.",quotes:[]},
-  {id:"d16",title:"Annsley checklist + process doc",priority:2,assignee:"annsley",status:"done",done:"Feb 28",notes:"Gia drafted weekly checklist.",quotes:[]},
-  {id:"d17",title:"Buy DJI clip-on mics",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"DJI mic 3, growth Wise card.",quotes:[]}
+  {id:"d15",title:"Give Annsley Mac Mini",priority:1,assignee:"hugh",status:"done",done:"Feb 27",notes:"",quotes:[]},
+  {id:"d16",title:"Annsley checklist + process doc",priority:2,assignee:"annsley",status:"done",done:"Feb 28",notes:"",quotes:[]},
+  {id:"d17",title:"Buy DJI clip-on mics",priority:2,assignee:"hugh",status:"done",done:"Feb 16",notes:"",quotes:[]}
 ];
 
 const LAST_UPDATED = "2026-03-13 15:11 AEDT";
-
 let activeFilter = "all";
 
-function renderBoard() {
-  const board = document.getElementById("board");
-  document.getElementById("lastUpdated").textContent = LAST_UPDATED;
-
-  const columns = [
-    { key: "todo", label: "To Do", icon: "\u{1F4CB}" },
-    { key: "in_progress", label: "In Progress", icon: "\u26A1" },
-    { key: "done", label: "Done", icon: "\u2705", className: "done" }
-  ];
-
-  board.innerHTML = columns.map(col => {
-    const tasks = TASKS.filter(t => {
-      if (t.status !== col.key) return false;
-      if (activeFilter === "all") return true;
-      if (["hugh","duke","annsley"].includes(activeFilter)) return t.assignee === activeFilter;
-      if (activeFilter === "p1") return t.priority === 1;
-      if (activeFilter === "p2") return t.priority === 2;
-      if (activeFilter === "p3") return t.priority === 3;
-      return true;
-    }).sort((a,b) => a.priority - b.priority);
-
-    return `
-      <div class="column ${col.className || ''}">
-        <div class="column-header">
-          ${col.icon} ${col.label}
-          <span class="count">${tasks.length}</span>
-        </div>
-        <div class="column-cards">
-          ${tasks.map(t => renderCard(t, col.key)).join("")}
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => card.classList.toggle("expanded"));
-  });
+function getFiltered(status) {
+  return TASKS.filter(t => {
+    if (t.status !== status) return false;
+    if (activeFilter === "all") return true;
+    if (["hugh","duke","annsley"].includes(activeFilter)) return t.assignee === activeFilter;
+    if (activeFilter === "p1") return t.priority === 1;
+    if (activeFilter === "p2") return t.priority === 2;
+    if (activeFilter === "p3") return t.priority === 3;
+    return true;
+  }).sort((a,b) => a.priority - b.priority);
 }
 
-function renderCard(t, colKey) {
-  const pClass = `tag-p${t.priority}`;
-  const pLabel = `P${t.priority}`;
-  const assigneeLabel = t.assignee.charAt(0).toUpperCase() + t.assignee.slice(1);
+function renderBoard() {
+  document.getElementById("lastUpdated").textContent = LAST_UPDATED;
 
-  let notesHtml = "";
-  if (t.notes) notesHtml += `<p>${escapeHtml(t.notes)}</p>`;
-  if (t.quotes && t.quotes.length > 0) {
-    notesHtml += t.quotes.map(q => `<div class="quote">${escapeHtml(q)}</div>`).join("");
-  }
-  if (t.link) {
-    notesHtml += `<p><a href="${t.link}" target="_blank">View in Slack \u2192</a> ${t.channel || ""}</p>`;
-  }
+  const todo = getFiltered("todo");
+  const inProg = getFiltered("in_progress");
+  const done = getFiltered("done");
+  const active = TASKS.filter(t => t.status !== "done").length;
 
+  document.getElementById("taskStats").textContent = `${active} active \u00b7 ${done.length} complete`;
+
+  const cols = [
+    { key:"todo", label:"To Do", tasks:todo, cls:"" },
+    { key:"in_progress", label:"In Progress", tasks:inProg, cls:"" },
+    { key:"done", label:"Done", tasks:done, cls:"col-done" }
+  ];
+
+  document.getElementById("board").innerHTML = cols.map(col => `
+    <div class="column ${col.cls}">
+      <div class="column-header">
+        <span class="column-label">${col.label}</span>
+        <span class="column-count">${col.tasks.length}</span>
+      </div>
+      <div class="column-cards">
+        ${col.tasks.map(t => renderCard(t)).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", e => {
+      if (e.target.classList.contains("card-check")) return;
+      card.classList.toggle("expanded");
+    });
+  });
+
+  const p1 = TASKS.filter(t=>t.status!=="done"&&t.priority===1).length;
+  const p2 = TASKS.filter(t=>t.status!=="done"&&t.priority===2).length;
+  const p3 = TASKS.filter(t=>t.status!=="done"&&t.priority===3).length;
+  document.getElementById("footerStats").innerHTML = `<strong>${p1}</strong> P1 \u00b7 <strong>${p2}</strong> P2 \u00b7 <strong>${p3}</strong> P3 \u00b7 <strong>${done.length}</strong> Done (30d)`;
+}
+
+function renderCard(t) {
   const isDone = t.status === "done";
-  const checkClass = isDone ? "card-checkbox done-check" : "card-checkbox";
-  const checked = isDone ? "checked" : "";
-  const nextLabel = t.status === "todo" ? "Start" : t.status === "in_progress" ? "Done" : "";
+  const pClass = `tag-p${t.priority}`;
+  const name = t.assignee.charAt(0).toUpperCase() + t.assignee.slice(1);
+  const actionLabel = t.status === "todo" ? "START \u2192" : t.status === "in_progress" ? "DONE \u2192" : "";
+
+  let notes = "";
+  if (t.notes) notes += `<p>${esc(t.notes)}</p>`;
+  if (t.quotes?.length) notes += t.quotes.map(q=>`<div class="quote">${esc(q)}</div>`).join("");
+  if (t.link) notes += `<p><a href="${t.link}" target="_blank">View in Slack \u2192</a> ${t.channel||""}</p>`;
 
   return `
     <div class="card" data-id="${t.id}">
       <div class="card-top">
-        ${!isDone ? `<input type="checkbox" class="${checkClass}" ${checked} data-task-id="${t.id}" title="${nextLabel}" onclick="event.stopPropagation(); advanceTask('${t.id}')">` : `<input type="checkbox" class="${checkClass}" checked disabled>`}
-        <div class="card-title">${escapeHtml(t.title)}</div>
-        ${notesHtml ? '<div class="expand-icon">\u25BC</div>' : ''}
+        <input type="checkbox" class="card-check ${isDone?'is-done':''}" ${isDone?'checked disabled':''} onclick="event.stopPropagation();advanceTask('${t.id}')">
+        <div class="card-title">${esc(t.title)}</div>
+        ${actionLabel?`<span class="card-action">${actionLabel}</span>`:''}
       </div>
       <div class="card-meta">
-        <span class="tag ${pClass}">${pLabel}</span>
-        <span class="assignee">@${assigneeLabel}</span>
-        ${t.due ? `<span class="due">\u{1F4C5} ${t.due}</span>` : ""}
-        ${t.done ? `<span class="assignee">\u2713 ${t.done}</span>` : ""}
-        ${nextLabel ? `<span class="assignee" style="color:var(--blue);">\u2192 ${nextLabel}</span>` : ""}
+        <span class="tag ${pClass}">P${t.priority}</span>
+        <span class="assignee-tag">@${name}</span>
+        ${t.due?`<span class="due-tag">${t.due}</span>`:''}
+        ${t.done?`<span class="done-date">${t.done}</span>`:''}
       </div>
-      ${notesHtml ? `<div class="card-notes">${notesHtml}</div>` : ""}
-    </div>
-  `;
+      ${notes?`<div class="card-notes">${notes}</div>`:''}
+    </div>`;
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function advanceTask(taskId) {
-  const task = TASKS.find(t => t.id === taskId);
-  if (!task) return;
-
-  const card = document.querySelector(`.card[data-id="${taskId}"]`);
-  if (card) card.classList.add("moving");
-
-  setTimeout(() => {
-    if (task.status === "todo") {
-      task.status = "in_progress";
-    } else if (task.status === "in_progress") {
-      task.status = "done";
-      task.done = new Date().toLocaleDateString("en-AU", { month:"short", day:"numeric" });
-    }
+function advanceTask(id) {
+  const t = TASKS.find(x=>x.id===id);
+  if (!t) return;
+  const el = document.querySelector(`.card[data-id="${id}"]`);
+  if (el) el.classList.add("moving");
+  setTimeout(()=>{
+    if (t.status==="todo") t.status="in_progress";
+    else if (t.status==="in_progress") { t.status="done"; t.done=new Date().toLocaleDateString("en-AU",{month:"short",day:"numeric"}); }
     renderBoard();
-  }, 300);
+  },300);
 }
 
-// Filter buttons
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+function esc(s) { const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    activeFilter = btn.dataset.filter;
+    activeFilter=btn.dataset.filter;
     renderBoard();
   });
 });
